@@ -30,7 +30,7 @@ sub main {
 
 		#TODO handle Read which does not have $4 so it needs to be recorded as an action, not a return value
 		next if $line =~ /^Read/;
-		# One KNX actor Jalousieaktor '00 ' and 'FF '
+		# One KNX actor returns '00 ' and 'FF ' every now and then...
 		$line =~ /^(.+) from (.+) to (.+): (\w+)\s*$/;
 		my ($action, $physical_address, $group_address, $value) = (lc($1), $2, $3, hex("0x$4"));
 		print "'$action' '$physical_address' '$group_address' '$value' '$1' '$2' '$3' '$4'\n";
