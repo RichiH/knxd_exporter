@@ -16,10 +16,9 @@ sub build_and_send_data {
 	foreach my $group_address (sort keys %knx_group_address_value) {
 		$output .= "knx_group_address_value{group_address=\"$group_address\"} $knx_group_address_value{$group_address}\n";
 	}
-	#print $output;
 	
-	my @curl = ('curl', '-X', 'POST', '--data-binary', $output, 'http://localhost:9091/metrics/job/knx_exporter');
-	system (@curl);
+	my @curl = ('curl', '-X', 'POST', '--data-binary', $output, 'http://localhost:9091/metrics/job/knxd_exporter');
+	system (@curl) == 0 or print "ERROR: $!\n";
 }
 
 sub main {
@@ -33,10 +32,10 @@ sub main {
 		# One KNX actor returns '00 ' and 'FF ' every now and then...
 		$line =~ /^(.+) from (.+) to (.+): (\w+)\s*$/;
 		my ($action, $physical_address, $group_address, $value) = (lc($1), $2, $3, hex("0x$4"));
-		print "'$action' '$physical_address' '$group_address' '$value' '$1' '$2' '$3' '$4'\n";
+		print "'$action' '$physical_address' '$group_address' '$value' '$1' '$2' '$3' '$4'";
 		$knx_group_address_value{$group_address} = $value;
 		build_and_send_data();
-		print "\n";
+		print " -- done sending\n";
 	}
 	close GROUPSOCKETLISTEN;
 }
